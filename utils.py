@@ -10,7 +10,7 @@ def csv_to_parquet(csv_file):
     parquet_file = os.path.splitext(csv_file)[0] + '.parquet'
     pq.write_table(table, parquet_file)
  
-def read_paraquet(parquet_file):
+def read_parquet(parquet_file):
     table = pq.read_table(parquet_file)
     return table.to_pandas()
 
@@ -119,8 +119,8 @@ def clean_trades_data(file_path, output_file):
 # Example usage
 # clean_trades_data('Trades.csv', 'cleaned_trades.csv')
 
-pd = read_paraquet('Orders.parquet')
-pd.info()
+# pd = read_parquet('Orders.parquet')
+# pd.info()
 # csv_to_parquet('Trades.csv')
 
 # df = pd.read_csv('Orders.csv')
