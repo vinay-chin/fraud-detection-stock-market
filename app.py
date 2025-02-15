@@ -8,8 +8,11 @@ st.set_page_config(layout="wide")
 
 page_bg_img = '''
 <style>
+.stAppHeader {
+background: rgb(14 17 23 / 0%);
+}
 [data-testid="stApp"]{
-background-image: url("https://images.unsplash.com/photo-1542281286-9e0a16bb7366");
+background-image: url("https://res.cloudinary.com/djqp7rqfd/image/upload/f_auto,q_auto/qj3pdzrhdhfajhm05phf");
 background-size: cover;
 }
 </style>
@@ -17,9 +20,38 @@ background-size: cover;
 
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-# Load data
-df = utils.read_parquet('Orders.parquet')
-results = orders.detect_unusual_activities(df)
+@st.cache_data
+def cleaning_data_from_orders(file):
+    df = pd.read_csv(file)
+    df = utils.clean_data_orders(df)
+    df = df.reset_index(drop=True)
+    return df
+
+@st.cache_data
+def cleaning_data_from_trading(file):
+    df = pd.read_csv(file)
+    df = utils.clean_trades_data(df)
+    df = df.reset_index(drop=True)
+    return df
+
+orders_file = st.file_uploader("Choose Orders.csv file")
+trades_file = st.file_uploader("Choose Trades.csv file")
+
+if orders_file is None or trades_file is None:
+    st.info("Please upload both Orders.csv and Trades.csv files")
+    st.stop()
+
+orders_df = cleaning_data_from_orders(orders_file)
+trades_df = cleaning_data_from_trading(trades_file)
+
+st.write("Orders Table:")
+st.write(orders_df.head(10))
+
+st.write("Trades Table:")
+st.write(trades_df.head(10))
+
+
+results = orders.detect_unusual_activities(orders_df)
 st.title("Fraud Detection Dashboard")
 # Create three columns
 col1, col2, col3 = st.columns(3)
